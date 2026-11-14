@@ -10,7 +10,7 @@ r"""배포 묶음 (2026-11-14) — D&D 미스타라 영웅전기 (PS3 일본판 
 import hashlib, os, shutil, subprocess, sys, zipfile
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 R = lambda *p: os.path.join(ROOT, *p)
-VER = 'v0.91'
+VER = 'v0.92'
 XDELTA = r'C:\claude\utils\xdelta.exe'
 GAME = r'D:\hospi\rpcs3\games\Dungeons & Dragons - Mystara Eiyuu Senki (Japan)\PS3_GAME'
 TID = 'BLJM61055'
@@ -22,7 +22,8 @@ MAIN = ['ICON0.PNG', 'USRDIR/EBOOT.BIN',
         'USRDIR/nativePS3/game_texture/copy_announce_NOMIP.tex',
         'USRDIR/nativePS3/movie/00_ID_THUM.tex', 'USRDIR/nativePS3/movie/01_ID_THUM.tex', 'USRDIR/nativePS3/movie/02_ID_THUM.tex',
         'USRDIR/nativePS3/options/chpt_title0_LIN.tex', 'USRDIR/nativePS3/options/descripter0_LIN.tex',
-        'USRDIR/nativePS3/options/record0_LIN.tex', 'USRDIR/nativePS3/options/setting1_LIN.tex']
+        'USRDIR/nativePS3/options/record0_LIN.tex', 'USRDIR/nativePS3/options/setting1_LIN.tex',
+        'TROPDIR/NPWR04685_00/TROPHY.TRP']                # 트로피 한글(2026-11-15, tools/trophy_ko.py)
 MOVIE = ['USRDIR/nativePS3/movie/interview/%02d.pam' % i for i in range(3)]
 # 1.02 업데이트(dev_hdd0\game\BLJM61055)가 덮는 파일 — 1.02 묶음은 디스크 쪽에서 이것들을 빼고, 업데이트 폴더 쪽에 1.02용을 넣음
 OVERRIDDEN = {'USRDIR/EBOOT.BIN', 'USRDIR/nativePS3/GUI/font/Font.gfd', 'USRDIR/nativePS3/GUI/font/Font_00_ID.tex',
@@ -31,6 +32,7 @@ UPD = ['USRDIR/EBOOT.BIN', 'USRDIR/nativePS3/GUI/font/Font.gfd', 'USRDIR/nativeP
        'USRDIR/nativePS3/GUI/message/common_jpn.gmd', 'USRDIR/nativePS3/arc/gui.arc', 'USRDIR/nativePS3/options/setting2_LIN.tex']
 def new_of(rel):
     """새것 = 빌드 폴더(2026-11-14 v0.91 부터. 설치 폴더는 하스피가 원본으로 다시 깔기도 해서 안 믿음)"""
+    if rel.startswith('TROPDIR/'): return R('work', 'trophy', 'build', 'TROPHY.TRP')
     if rel == 'ICON0.PNG': return R('work', 'build', 'ICON0.PNG')
     if rel == 'USRDIR/EBOOT.BIN': return R('work', 'build', 'EBOOT.BIN')
     sub = rel.split('nativePS3/', 1)[1]
@@ -48,6 +50,7 @@ def upd_new(rel):
     if rel == 'USRDIR/EBOOT.BIN': return R('work', 'v102', 'build', 'EBOOT.elf')
     return R('work', 'v102', 'build', 'hdd0', *rel.split('/'))
 def orig_of(rel):
+    if rel.startswith('TROPDIR/'): return R('work', 'trophy', 'orig', 'TROPHY.TRP')
     sub = rel.split('nativePS3/', 1)[1] if 'nativePS3/' in rel else rel.split('USRDIR/', 1)[1] if 'USRDIR/' in rel else rel
     for c in ('work/orig', 'work/orig_install/nativePS3', 'work/orig_install'):
         q = R(c, sub)
@@ -115,7 +118,15 @@ CHANGES_MAIN = """
 ■ 섀도 오버 미스타라 이름 입력을 영문 글자판으로(돌판 글자를 커서 칸에 맞춰 다시 배치)
 ■ 챕터 선택 무대 이름을 본편 대사와 같은 표기로(아테노스·코룬글레인·란넬즈)
 ■ 1.02 업데이트용 묶음을 따로 만듦
-{v102}"""
+{v102}
+[ v0.92 에서 바뀐 것 ]
+
+■ 빠져 있던 그림 글자 : 무대 제목 「숨겨진 보물」, 엔딩 「모험의 기록」 창, 상점 소지품 칸 이름표,
+   링 위 「저주의 검」, 「원더 에그」 등
+■ 랭킹·캐릭터 기본 이름을 영문판 이름으로, 상점 대사 칸 넘침, 그 밖 대사 오류 수정
+■ 트로피 이름·설명 한글(RPCS3 에 이 게임 트로피가 이미 등록돼 있으면 원문 그대로일 수 있음)
+
+"""
 CHANGES_V102 = """
 ■ 1.02 업데이트에서 새로 생긴 것 : 네트워크(통신 플레이·게임 만들기·검색·랭킹) 메뉴 문구 전부,
    업데이트 내역 그림 2장, 온라인 일시 정지 메뉴, 난이도 「전부」, 온라인 시스템 메시지

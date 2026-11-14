@@ -29,7 +29,7 @@ def main():
     print('① 옮긴 포인터 칸 %d (값이 바뀐 것 %d)' % (len(pl), moved))
     print('② 가리키는 곳의 24 B 가 1.00 빌드와 다른 포인터 %d' % len(bad))
     for b_ in bad[:12]: print('   1.00 %07X → 1.02 %07X: %s | %s' % b_)
-    out = [int(o) for o in db if not (P.SEG3_OFF <= o < P.SEG3_END or 0xE55000 <= o < 0xE5B000)]
+    out = [int(o) for o in db if not (P.SEG3_OFF <= o < P.SEG3_END or 0xE55000 <= o < 0xE5B000 or 0x105E20C <= o < 0x105E2AC)]   # 0x105E20C~ = 랭킹 기본 이름 직접 씀(세그먼트 0 사본, 2026-11-15)
     print('③ 바뀐 바이트: 1.00 빌드 %d · 1.02 결과 %d · 허용 구역 밖 %d %s' % (len(da), len(db), len(out), [hex(o) for o in out[:8]]))
 
 

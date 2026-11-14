@@ -5,7 +5,7 @@ r"""SOM 본편 한글 빌더 (2026-11-13) — 번역 TSV 전부를 EBOOT 에 넣
    · 줄바꿈 FFFF x y — x = −16 × 앞 줄 칸 수(글자·글리프·이름 매크로 = 1칸, 색 = 0), y = 원문 그 줄 값
    · 아이템 메시지({c0C} 로 시작, 머리 2워드) 머리 x = (368 − 16 × 첫 줄 칸 수)/2 — 원문이 그 공식을 따를 때만
    · 덩어리가 원래 자리보다 길면 빈 0 구간(0x675410~)으로 옮기고 그 덩어리 시작을 가리키는 VA 포인터 전부 교체
-   · 한글 음절 → 글꼴 칸: 한자 0x2000~0x21FF(‼ 2170·⁉ 217E 제외) → 1D40~1D51 → 가나 1E00~1EBF(괴물 문자 1E54~1E5A 제외)
+   · 한글 음절 → 글꼴 칸: 한자 0x2000~0x21FF(‼ 2170·⁉ 217D 제외) → 1D40~1D51 → 가나 1E00~1EBF(괴물 문자 1E54~1E5A 제외)
    · 글꼴 = 갈무리14 BDF, 0 = 흰 글자 · E = 오른쪽·아래 그림자 · F = 투명 (poc_build 와 같음) · 바닥 «.» «…» «+» 새로 그림
    · 이름 입력 글자판 = 영문판 배치(poc_build.name_grid_english)
   출력: work/build/EBOOT.BIN(평문 ELF) · work/build/dd21x.bin · work/build/report.txt · work/build/glyphs.png
@@ -22,14 +22,17 @@ from bdf import Font
 END = 0x1402668; VA = 0x10000
 # 포인터 교체는 글 데이터 구역 안의 표에서만 — 실행 코드 안 우연한 2정렬 값(0x9C4586 «0074 2C88» 등)을 바꿔 부팅 실패(2026-11-13)
 PTR_ZONES = [(0x6C0000, 0x760000), (0x8F0000, 0x900000)]
-KEEP = {0x2003, 0x2013, 0x2169, 0x2170, 0x217E} | set(range(0x1E54, 0x1E5B))   # 2003 = 達 — {N0} 매크로가 직접 찍음 → «들»
+KEEP = {0x2003, 0x2013, 0x2018, 0x2169, 0x2170, 0x217D} | set(range(0x1E54, 0x1E5B))   # 2003 = 達 — {N0} 매크로가 직접 찍음 → «들» · 2018 = 様 — {N3} 이 혼자일 때 직접 찍음 → «님»(«당신프의», 2026-11-14 밤)
 # 매크로가 코드로 직접 가리키는 짧은 문자열(VA 포인터 없음) — 같은 자리 안에서 바꿈 (2026-11-13 «당신워의»)
 MACRO_STR = {0x6D68C8: '님', 0x6D68E4: '.', 0x6D68E8: ',', 0x6D6918: '', 0x6D691C: '들'}   # さん 。 よ、 様 方
+CAPTIONS = {0x9A08C0: ['그 거목을 본 자는', '아무도 돌아오지 못했다.'],      # その大樹を見たものは、／誰１人として帰ってこない。
+            0x9A08FC: ['글란트리 공국'],                                   # グラントリ公国(무대 제목)
+            0x9A0910: ['글란트리 공국 왕자　말라키 뒤 마레']}              # グラントリ公国王子　マラキー・ドゥ・マライ
 SLOTS = [c for c in range(0x2000, 0x2200) if c not in KEEP] + list(range(0x1D40, 0x1D52)) + \
         [c for c in range(0x1E00, 0x1EC0) if c not in KEEP]
 HALF = {' ': 0x1800, '　': 0x1800, ',': 0x1EC3, '!': 0x1EF0, '?': 0x1EEF, '&': 0x1EEE, '“': 0x1ED4,
         '～': 0x1ECE, '・': 0x1EC5, '（': 0x1ED9, '）': 0x1EDA, '！': 0x1EF0, '？': 0x1EEF, '＆': 0x1EEE,
-        '‼': 0x2170, '⁉': 0x217E}
+        '‼': 0x2170, '⁉': 0x217D}   # ⁉ = 217D(원문 731ADC «…⁉» 바이트), 217E 는 録 — 예전 217E 로 잘못 잡아 «…録» 찍힘(2026-11-15 하스피 스샷)
 NEW_PUNCT = '.．…＋'
 PUNCT_SP = re.compile(r'([,.!?…‼⁉、。，．！？・：；:;～~])[ 　]+')
 TOK = re.compile(r'(\{c[0-9A-F]{2}\}|\{N[0-9A-F]\}|\{[0-9A-F]{4}\}|\{＊\}|／)')
@@ -192,21 +195,64 @@ def main():
         ws = [code(ch) for ch in txt]
         assert len(ws) <= n0, (hex(a_), txt)
         e[a_:a_ + 2 * n0 + 2] = b''.join(struct.pack('>H', w) for w in ws) + b'\0' * (2 * (n0 - len(ws)) + 2)
-    ps3gfx.put(g, 0x2003, P.glyph(font, '들')); ps3gfx.put(g, 0x2013, P.glyph(font, '들'))   # 2013 = 方 — {N3}(あなた方) 매크로가 직접 찍음(«당신드의», 2026-11-14)
-    log('매크로 문자열 %s · 0x2003(達) = 들' % MACRO_STR)
+    # 그림 자막(추출 구역 밖 0x9A08C0~, 머리 = x·y 두 워드, 줄바꿈 FFFF −폭 0010) — 2026-11-14 밤 리뷰 스샷 «グラントリⅡ부»·«…王子 マラキ람…»
+    #   번역은 같은 내용 대사(00218·00235)와 같게. x = 원래 x + 8×(원래 첫 줄 글자 수 − 새 첫 줄 글자 수)(원래 맞춤 유지), 원래 길이 안.
+    for a_, lines in CAPTIONS.items():
+        x0, y0 = struct.unpack_from('>HH', e0, a_)
+        n0 = 0
+        while e0[a_ + 4 + 2 * n0:a_ + 6 + 2 * n0] != b'\0\0': n0 += 1
+        first0 = 0
+        while first0 < n0 and struct.unpack_from('>H', e0, a_ + 4 + 2 * first0)[0] != 0xFFFF: first0 += 1
+        ws = []
+        for i, ln in enumerate(lines):
+            if i: ws += [0xFFFF, (-16 * len(lines[i - 1])) & 0xFFFF, 0x0010]
+            ws += [code(ch) for ch in ln]
+        assert len(ws) <= n0, (hex(a_), lines)
+        x = x0 + 8 * (first0 - len(lines[0]))
+        e[a_:a_ + 4 + 2 * n0 + 2] = struct.pack('>HH', x, y0) + b''.join(struct.pack('>H', w) for w in ws) + b'\0' * (2 * (n0 - len(ws)) + 2)
+        log('그림 자막 %X x %d→%d %s' % (a_, x0, x, '／'.join(lines)))
+    # 엔딩 «冒険の記録» 창 항목 이름(2026-11-15 하스피 스샷 01:47 «밝단널외햇») = 글자 칸 12개(코드·속성 001F, 0x6C7FD0~) + 칸별 위치 표(x·y, 0x6C8000~)
+    #   원문 宝箱獲得数(5칸, y 0)·隠し部屋発見数(7칸, y 16). 위치가 칸마다 있어 띄어쓰기는 칸 없이 x 만 8 벌림, 남는 칸은 공백 1800.
+    REC_CELLS, REC_POS, REC_N = 0x6C7FD0, 0x6C8000, 12
+    cells = []
+    for txt, y in (('보물상자 획득', 0), ('숨은 방 발견', 16)):
+        x = 0
+        for ch in txt:
+            if ch == ' ': x += 8; continue
+            cells.append((code(ch), x, y)); x += 16
+    assert len(cells) <= REC_N, cells
+    cells += [(0x1800, 0x60, 0x10)] * (REC_N - len(cells))
+    for i, (c, x, y) in enumerate(cells):
+        assert struct.unpack_from('>H', e0, REC_CELLS + 4 * i + 2)[0] == 0x001F
+        struct.pack_into('>HH', e, REC_CELLS + 4 * i, c, 0x001F); struct.pack_into('>HH', e, REC_POS + 4 * i, x, y)
+    log('모험 기록 창 항목 = 보물상자 획득 · 숨은 방 발견(칸 %d/%d)' % (len([c for c in cells if c[0] != 0x1800]), REC_N))
+    ps3gfx.put(g, 0x2003, P.glyph(font, '들')); ps3gfx.put(g, 0x2013, P.glyph(font, '들')); ps3gfx.put(g, 0x2018, P.glyph(font, '님'))   # {N3} = あなた様(2018, 혼자)/あなた方(2013, 여럿) → «용사님/용사들»   # 2013 = 方 — {N3}(あなた方) 매크로가 직접 찍음(«당신드의», 2026-11-14)
+    log('매크로 문자열 %s · 0x2003(達)·0x2013(方) = 들 · 0x2018(様) = 님' % MACRO_STR)
     NAME_EN = True                                     # 2026-11-14 밤 4 하스피 «영문입력 만들어줘» — 입력표 영문 배치 + 돌판 글자를 진짜 커서 사각형 안에(tools/name_en.py). False = 일본판 가나 그대로
     import name_en
     if NAME_EN:
         P.name_grid_english(e)
         log('이름 돌판 화면 배치표 새 칸 %d' % name_en.patch_table(e, log))
     recenter_windows(e0, e, log)
+    # 랭킹 기본 이름(가나 ヤマノウ… — {N5} «전설의 용사 ○○의 검» 에도 1위 이름이 끼워짐, 2026-11-14 밤 리뷰 스샷) → 롬의 영문판 표(ERLING·GYGAX…) 이름 칸만
+    #   레코드 16 B = 2 B · 이름 6 B(글자 목록 번호, FF 채움) · 8 B 꼬리. 꼬리 «0010000000000000» 이 1위. 일본판 표 두 벌(0x149B18C·0x14B8290) ← 영문판 0x14B8724
+    for jp_tail in (0x149B18C, 0x14B8290):
+        for r in range(10):
+            e[jp_tail - 6 + 16 * r:jp_tail + 16 * r] = e0[0x14B8724 - 6 + 16 * r:0x14B8724 + 16 * r]
+    log('랭킹 기본 이름 = 영문판(ERLING·GYGAX·JMWORD·ALMA·AREX·ANTONI·BRASS·CREMAT·LAY·LEFTY)')
+    # 캐릭터 기본 이름(이름 안 넣고 시작할 때) 가나 12칸 → 롬의 영문판 12칸(하스피 2026-11-14 «기본이름까지 영문으로»)
+    #   0x14B8328 + 8k: k0~11 = 가나(クラッサス·ジャーレッド·グレルダン·マイルズ·ルシア·ケイラ·(0x98~ 그림)·ヘンデル·サイアス·ドレイヴン·モリア·シャノン)
+    #   k12~23 = 영문(같은 차례, 6자 넘는 이름은 0x80~ 특수 번호 — 일본판 드워프 이름도 같은 방식). ⚠특수 번호 영문 이름은 화면 확인 필요.
+    e[0x14B8328:0x14B8328 + 96] = e0[0x14B8388:0x14B8388 + 96]
+    log('캐릭터 기본 이름 = 영문판 12칸')
     import hud_caption
     hud_caption.build(e, g, log)                       # 캐릭터 선택 위 표시줄 설명문(dd21x scroll1 그림 + EBOOT 띠 배치)
-    # dd22(스프라이트) = 원본 → 반지 이름 → 함정 말풍선 → 무대 제목(EBOOT 제목 기록 타일 번호도 바꿈)
+    # dd22(스프라이트) = 원본 → 반지 이름 → 함정 말풍선 → 상자판 이름표 → 무대 제목(EBOOT 제목 기록 타일 번호도 바꿈)
     import ringlab, trap_balloons, stage_title_ko
     g22, over = ringlab.build_ko(open(os.path.join(ROOT, 'work', 'orig', 'game_data', 'dd22.bin'), 'rb').read())
     log('반지 이름 넘침 %s' % over)
     g22 = bytearray(g22); log('함정 말풍선 넘침 %s' % trap_balloons.apply(g22))
+    import boxlabels; boxlabels.apply(g22, log)        # 상점 위 소지품 칸 상자판 이름표 0x16A2~0x16BE(슬링 등, 2026-11-15)
     stage_title_ko.build(e, g22, log)
     od =os.path.join(ROOT, 'work', 'build'); os.makedirs(od, exist_ok=True)
     open(os.path.join(od, 'EBOOT.BIN'), 'wb').write(e)

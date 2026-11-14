@@ -229,6 +229,14 @@ if __name__ == '__main__':
         j = jp.encode('utf-8'); k = ko.encode('utf-8')
         assert bytes(b[off:off + len(j) + 1]) == j + bytes(1), hex(off); assert len(k) <= len(j)
         b[off:off + len(j)] = k + bytes(len(j) - len(k))
+    # 랭킹 기본 이름(1.00 0x149B184·0x14B8288, 레코드 16 B 중 이름 6 B = +2) — 1.02 는 같은 표 두 벌이 0x105E20C·0x2F93D58 에 있음
+    #   (자리 짐작 +1ADAE80 이 틀려 «막힌 칸» → 직접 씀, 2026-11-15)
+    for off in (0x105E20C, 0x2F93D58):
+        for r in range(10):
+            assert bytes(b[off + 16 * r + 8:off + 16 * r + 16]) == a0[0x14B8288 + 16 * r + 8:0x14B8288 + 16 * r + 16], (hex(off), r)
+            b[off + 16 * r + 2:off + 16 * r + 8] = a1[0x14B8288 + 16 * r + 2:0x14B8288 + 16 * r + 8]
+    skip |= {x for x, y in fail if 0x14B8288 <= x < 0x14B8328}
+    rep.append('랭킹 기본 이름 = 1.02 두 벌(0x105E20C·0x2F93D58)에 직접 씀')
     fail = [f_ for f_ in fail if f_[0] not in skip]
     rep.append('1.02 UI 문구 %d줄은 1.02 자리에 직접 씀(바뀐 2줄 + 1.02 에만 있는 4줄)' % len(UI102))
     open(R('work', 'v102', 'build', 'report_port.txt'), 'w', encoding='utf-8').write('\n'.join(rep) + '\n')

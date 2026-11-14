@@ -21,6 +21,7 @@ ROWS = {
 
 # 한자 등 낱자(코드 → 글자)
 KANJI_LINES = """
+104A 井 1160 戸
 066A 高 066C 妖 066E 精 06EA 教 06EC 銀 06EE 打 098C 囲 098E 型 09AC 絶 09AE 周 09EC 聖
 09EE 爆 0A4E 神 0A6A 払 0A6C 北 0A6E 官 0BAE 立 0BCC 雷 0BCE 火 0BEC 料 0BEE 理
 0C4C 防 0C4E 父 0C8C 毒 0CAE 特 0CCC 仲 0CCE 盾 0CEC 多 0CEE 早 0E88 対
