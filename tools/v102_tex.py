@@ -71,6 +71,27 @@ def difficulty(a):
     blend(a, rgba, 95 - pad, 5 - pad)
     return a, ['difficulty «전부»']
 
+# ---------------- ②-2 로비 «이름 입력» 아이콘 «名» → «이름»(가로, 하스피 2026-11-14 A안) ----------------
+NAME_ICON = (925, 226, 953, 253)          # roomlist common1_ID 안 «名» 칸(x928~950·y228~252) + 여유 — 오른쪽 x957~ 은 프로필 틀이라 안 건드림
+def name_icon(im):
+    from PIL import ImageFont as IF
+    x0, y0, x1, y1 = NAME_ICON; W, H = x1 - x0, y1 - y0; S = 6
+    f = IF.truetype(FONT, 60)
+    try: f.set_variation_by_axes([900])
+    except Exception: pass
+    l, t, r, b = f.getbbox('이름'); tw, th = r - l, b - t
+    T = Image.new('L', (tw + 4, th + 4), 0); ImageDraw.Draw(T).text((2 - l, 2 - t), '이름', 255, font=f)
+    sc = min(24 * S / tw, 13 * S / th)
+    T = T.resize((max(1, int((tw + 4) * sc / S)), max(1, int((th + 4) * sc / S))), Image.LANCZOS)
+    m = np.zeros((H, W)); h, w = T.size[1], T.size[0]; yy = (H - h) // 2; xx = (W - w) // 2 - 1
+    m[yy:yy + h, xx:xx + w] = np.array(T) / 255.; m = np.clip(m * 1.25, 0, 1)
+    sh = np.zeros_like(m); sh[2:, 2:] = m[:-2, :-2]                                   # 원본처럼 오른쪽 아래 검은 그림자
+    sh = np.maximum(sh, np.pad(m, ((1, 0), (1, 0)))[:-1, :-1]); sh = np.maximum(sh, np.pad(m, ((0, 0), (1, 0)))[:, :-1])
+    alpha = np.clip(m + sh * (1 - m), 0, 1)
+    out = np.zeros((H, W, 4)); out[..., :3] = (255 * m / np.maximum(alpha, 1e-6))[..., None] * (m > 0)[..., None]; out[..., 3] = alpha * 255
+    a = im.copy(); a[y0:y1, x0:x1] = out.clip(0, 255).astype(np.uint8)
+    return a, ['로비 이름 아이콘 «이름»']
+
 # ---------------- ③ changelog ----------------
 CL = {
  'changelog_ID_NOMIP': ('패치 Ver.1.01 업데이트 내역', [
@@ -187,6 +208,17 @@ def make(outdir):
     s = os.path.join(outdir, 'difficulty0_ID.tex'); open(s, 'wb').write(arc[nm]); a, _ = texio.load(s)
     b, lg = difficulty(a); log += lg
     p = os.path.join(outdir, 'difficulty0_ID_ko.tex'); texio.save(s, p, b); res[nm] = open(p, 'rb').read()
+    nm = 'GUI' + BS + 'roomlist' + BS + 'tex' + BS + 'common1_ID'
+    s = os.path.join(outdir, 'common1_ID.tex'); open(s, 'wb').write(arc[nm]); a, _ = texio.load(s)
+    b, lg = name_icon(a); log += lg
+    p = os.path.join(outdir, 'common1_ID_ko.tex'); texio.save(s, p, b)
+    # 다시 압축한 것 중 «이름» 칸이 걸친 DXT5 4x4 블록만 원본에 갈아 끼움(다른 아이콘은 원본 바이트 그대로 — 전체 재압축은 화소 4천 개가 미세하게 바뀜)
+    o_, n_ = bytearray(arc[nm]), open(p, 'rb').read(); inf = mttex.info(o_); W_, off = inf['W'], inf['off']; assert inf['fmt'] == 0x17
+    x0, y0, x1, y1 = NAME_ICON
+    for by in range(y0 // 4, (y1 + 3) // 4):
+        for bx in range(x0 // 4, (x1 + 3) // 4):
+            q = off + (by * (W_ // 4) + bx) * 16; o_[q:q + 16] = n_[q:q + 16]
+    res[nm] = bytes(o_)
     for n in CL:
         nm = 'GUI' + BS + 'changelog' + BS + n
         s = os.path.join(outdir, n + '.tex'); open(s, 'wb').write(arc[nm])
