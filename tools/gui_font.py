@@ -56,14 +56,16 @@ def put_cell(tex, off, W, x, y, A):
     h, w = A.shape
     bx0, by0, bx1, by1 = x // 4, y // 4, (x + w + 3) // 4, (y + h + 3) // 4
     return (bx0, by0, bx1, by1)
-def build(tsvs, out_dir):
-    b = bytearray(open(R('work', 'orig', 'GUI', 'font', 'Font.gfd'), 'rb').read())
-    t = bytearray(open(R('work', 'orig', 'GUI', 'font', 'Font_00_ID.tex'), 'rb').read())
+def build(tsvs, out_dir, src=None, extra=''):
+    """src = 원본 GUI 폴더(기본 work/orig/GUI; 1.02 = work/v102/plain/GUI) · extra = TSV 밖에서 더 쓰는 글자"""
+    src = src or R('work', 'orig', 'GUI')
+    b = bytearray(open(os.path.join(src, 'font', 'Font.gfd'), 'rb').read())
+    t = bytearray(open(os.path.join(src, 'font', 'Font_00_ID.tex'), 'rb').read())
     info = mttex.info(t); W, H, off = info['W'], info['H'], info['off']
-    im, _ = mttex.load(R('work', 'orig', 'GUI', 'font', 'Font_00_ID.tex')); A = np.array(im)[..., 3].copy()
+    im, _ = mttex.load(os.path.join(src, 'font', 'Font_00_ID.tex')); A = np.array(im)[..., 3].copy()
     st, ents = entries(b); have = {e[0] for e in ents}
     texts = [s for p in tsvs for s in gmd.load_tsv(p)]
-    used = set(''.join(texts))
+    used = set(''.join(texts)) | set(extra)
     need = sorted(c for c in used if ord(c) not in have and c not in '\r\n')
     spare = [e for e in ents if 0x4E00 <= e[0] <= 0x9FFF and chr(e[0]) not in used]
     assert len(spare) >= len(need), (len(spare), len(need))

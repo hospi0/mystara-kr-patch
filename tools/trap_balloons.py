@@ -11,7 +11,8 @@ import ps3gfx
 from bdf import Font
 LO = 0x4BC0
 # (지울 상자 x0,y0,x1,y1 판 좌표, 한글, 정렬) — 상자 = 원문 글자 범위 + 1px
-BOXES = [((79, 9, 128, 22), '석화살', 'c80'),   # 게임 말풍선은 판 x 80~111 만 보임(«석화화살» → «석화호» 로 잘림, 2026-11-14) — 좁은 판 글꼴
+BOXES = [((79, 9, 112, 22), '석화', 'c80'),   # ★«石化矢» 는 글자 칸 모음: 석화 함정 = «石化» 두 칸(x80~111)+«!», 화살 함정 = «矢» 한 칸(x112~127)+«!» (2026-11-14 하스피 «화살 함정에 !만», «석화살도 석화빔도 아니고 석화»)
+         ((112, 9, 128, 22), '화살', 'c112'),   # 矢 칸(16px) — 칸 경계 넘지 않게
          ((156, 9, 188, 22), '낙석', 'c'),
          ((65, 26, 80, 39), '불', 'c'),
          ((221, 27, 251, 38), '가스', 'c'),
@@ -57,12 +58,13 @@ def apply(b):
         reg = cv[y0:y1, x0:x1]; keep = bm[y0:y1, x0:x1] | (reg == 15)
         reg[~keep] = 0                       # 글자·번짐 화소 전부 바탕(0)으로 — 테두리·투명은 그대로
         if not txt: continue
-        f_ = Font(os.path.join(r'C:\claude\utils\font\Galmuri-v2.40.3', 'Galmuri11-Condensed.bdf')) if al == 'c80' else font
+        f_ = Font(os.path.join(r'C:\claude\utils\font\Galmuri-v2.40.3', 'Galmuri11-Condensed.bdf')) if al == 'c112' else font   # 16px 한 칸에 두 글자만 좁은 글꼴
         a = render(f_, txt); h, w = a.shape
         if w > x1 - x0 or h > y1 - y0: over.append((txt, w, h, x1 - x0, y1 - y0))
         a = a[:y1 - y0, :x1 - x0]; h, w = a.shape
         ox = x0 + ((x1 - x0 - w) // 2 if al == 'c' else 1); oy = y0 + (y1 - y0 - h) // 2
         if al == 'c80': ox = 80 + (32 - w) // 2
+        if al == 'c112': ox = 112 + (16 - w) // 2
         sub = cv[oy:oy + h, ox:ox + w]; sub[a & ~bm[oy:oy + h, ox:ox + w]] = 10
     store(b, cv); return over
 def main():

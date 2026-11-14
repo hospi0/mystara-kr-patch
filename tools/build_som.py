@@ -194,8 +194,11 @@ def main():
         e[a_:a_ + 2 * n0 + 2] = b''.join(struct.pack('>H', w) for w in ws) + b'\0' * (2 * (n0 - len(ws)) + 2)
     ps3gfx.put(g, 0x2003, P.glyph(font, '들')); ps3gfx.put(g, 0x2013, P.glyph(font, '들'))   # 2013 = 方 — {N3}(あなた方) 매크로가 직접 찍음(«당신드의», 2026-11-14)
     log('매크로 문자열 %s · 0x2003(達) = 들' % MACRO_STR)
-    NAME_EN = False                                    # 2026-11-14 하스피 «걍 일어로 돌려» — 이름 입력은 일본판 가나(돌판·입력표) 그대로, 버튼만 한글
-    if NAME_EN: P.name_grid_english(e)
+    NAME_EN = True                                     # 2026-11-14 밤 4 하스피 «영문입력 만들어줘» — 입력표 영문 배치 + 돌판 글자를 진짜 커서 사각형 안에(tools/name_en.py). False = 일본판 가나 그대로
+    import name_en
+    if NAME_EN:
+        P.name_grid_english(e)
+        log('이름 돌판 화면 배치표 새 칸 %d' % name_en.patch_table(e, log))
     recenter_windows(e0, e, log)
     import hud_caption
     hud_caption.build(e, g, log)                       # 캐릭터 선택 위 표시줄 설명문(dd21x scroll1 그림 + EBOOT 띠 배치)
@@ -213,8 +216,7 @@ def main():
     import subprocess
     subprocess.run([sys.executable, os.path.join(HERE, 'name_buttons.py'), os.path.join(od, 'dd21x.bin'), os.path.join(od, 'dd21x.bin')], check=True)
     log('이름 입력 버튼 4개 새김(공백·이름·지움·완료)')
-    import name_overlay
-    nn = name_overlay.write(os.path.join(od, 'dd21x.bin'), os.path.join(od, 'dd21x.bin'))[0] if NAME_EN else 0
+    nn = name_en.write(os.path.join(od, 'dd21x.bin'), os.path.join(od, 'dd21x.bin')) if NAME_EN else 0
     fin = open(os.path.join(od, 'dd21x.bin'), 'rb').read()                 # 검산: 대사 한글 칸이 뒤 단계(8x8 띠·돌판·버튼)에 덮였나
     broke = ['%s(%X)' % (k, c) for c, (k, bb) in drawn.items() if fin[c * 128:(c + 1) * 128] != bb]
     log(('⛔대사 글자 칸 덮임 %d %s' % (len(broke), broke[:20])) if broke else '대사 글자 칸 덮임 0')
