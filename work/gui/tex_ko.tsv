@@ -1,0 +1,233 @@
+텍스처	번호	원문	한글
+descripter0_LIN	0	最初からゲームを始めます。	처음부터 게임을 시작합니다.
+descripter0_LIN	1	前回プレイ終了時の続きからゲームを始めます。	지난번에 끝낸 곳부터 게임을 이어서 시작합니다.
+descripter0_LIN	2	今までにクリアしたチャプターから新たにゲームを始めます。／また、「ボスキャラクター攻略映像」を鑑賞することもできます。	지금까지 클리어한 챕터부터 새로 게임을 시작합니다.／또 「보스 캐릭터 공략 영상」을 감상할 수도 있습니다.
+descripter0_LIN	3	今までに獲得したすべてのアイテムが表示されます。	지금까지 얻은 모든 아이템이 표시됩니다.
+descripter0_LIN	4	今までのプレイ履歴が表示されます。	지금까지의 플레이 기록이 표시됩니다.
+descripter0_LIN	5	各種設定を変更します。	각종 설정을 바꿉니다.
+descripter0_LIN	6	メインメニューに戻ります。	메인 메뉴로 돌아갑니다.
+descripter0_LIN	7	プレイ履歴を更新しています…	플레이 기록을 갱신하고 있습니다…
+setting1_LIN	0	オプション	옵션
+setting1_LIN	1	ゲームオプション	게임 옵션
+setting1_LIN	2	プレイヤーオプション	플레이어 옵션
+setting1_LIN	3	コントローラ	컨트롤러
+setting1_LIN	4	サウンド	사운드
+setting1_LIN	5	スクリーン	화면
+setting1_LIN	6	ゲームマニュアル	게임 설명서
+setting1_LIN	7	戻る	돌아가기
+setting1_LIN	8	難易度	난이도
+setting1_LIN	9	プレイヤー人数	플레이어 수
+setting1_LIN	10	同キャラクター選択	같은 캐릭터 선택
+setting1_LIN	11	装備アイテム	장비 아이템
+setting1_LIN	12	ランダムダメージ	랜덤 대미지
+setting1_LIN	13	画面点滅	화면 깜빡임
+setting1_LIN	14	スコアリセット	점수 초기화
+setting1_LIN	15	初期設定に戻す	초기 설정으로 되돌리기
+setting1_LIN	16	ガード操作	가드 조작
+setting1_LIN	17	大斬り操作	큰 베기 조작
+setting1_LIN	18	アタックボタンで拾う	공격 버튼으로 줍기
+setting1_LIN	19	スライディング操作で拾う	슬라이딩으로 줍기
+setting1_LIN	20	ゲームを終了	게임 종료
+setting1_LIN	21	サウンドモード	사운드 모드
+setting1_LIN	22	音量	음량
+setting1_LIN	23	サウンドテスト	사운드 테스트
+setting1_LIN	24	画面サイズ	화면 크기
+setting1_LIN	25	スムージング	스무딩
+setting1_LIN	26	スキャンライン	스캔라인
+setting1_LIN	27	フリッカー	플리커
+setting1_LIN	28	クロスカラー	크로스 컬러
+setting1_LIN	29	突き飛ばし攻撃操作	밀쳐내기 공격 조작
+setting1_LIN	30	緊急回避技操作	긴급 회피기 조작
+setting1_LIN	31	カラーエディット	컬러 에디트
+setting1_LIN	32	設定しない	설정 안 함
+setting1_LIN	33	アタック	공격
+setting1_LIN	34	ジャンプ	점프
+setting1_LIN	35	アイテムを選択	아이템 선택
+setting1_LIN	36	アイテムを使用	아이템 사용
+setting1_LIN	37	アイテムを拾う	아이템 줍기
+setting1_LIN	38	バックステップ	백스텝
+setting1_LIN	39	ガード	가드
+setting1_LIN	40	スライディング	슬라이딩
+setting1_LIN	41	ダッシュ	대시
+setting1_LIN	42	ダッシュ必殺技	대시 필살기
+setting1_LIN	43	大斬り	큰 베기
+setting1_LIN	44	突き飛ばし攻撃	밀쳐내기 공격
+setting1_LIN	45	対空必殺技	대공 필살기
+setting1_LIN	46	緊急回避技	긴급 회피기
+setting1_LIN	47	バックスタッブ	백스탭
+setting1_LIN	50	ステレオ	스테레오
+setting1_LIN	51	モノラル	모노
+setting1_LIN	52	できる	가능
+setting1_LIN	53	できない	불가능
+setting1_LIN	54	壊れる	부서짐
+setting1_LIN	55	壊れない	안 부서짐
+setting1_LIN	56	オリジナル	오리지널
+setting1_LIN	57	マイルド	마일드
+setting1_LIN	58	1人	1명
+setting1_LIN	59	2人	2명
+setting1_LIN	60	3人	3명
+setting1_LIN	61	4人	4명
+setting1_LIN	62	タイプ 1	타입 1
+setting1_LIN	63	タイプ 2	타입 2
+setting1_LIN	64	タイプ 3	타입 3
+setting1_LIN	65	タイプ 4	타입 4
+setting1_LIN	77	フルサイズ	풀 사이즈
+setting1_LIN	78	はい	예
+setting1_LIN	79	いいえ	아니요
+setting1_LIN	80	よろしいですか？	괜찮습니까?
+setting1_LIN	81	キャラクター	캐릭터
+setting1_LIN	82	パレット	팔레트
+setting1_LIN	83	プリセット	프리셋
+setting1_LIN	84	背景	배경
+setting1_LIN	85	キャラクターボイス	캐릭터 보이스
+setting1_LIN	86	日本語	일본어
+setting1_LIN	87	英語	영어
+setting1_LIN	88	※このステージのデータは	※이 스테이지의 데이터는
+setting1_LIN	89	保存されません。	저장되지 않습니다.
+setting1_LIN	90	後転	뒤구르기
+record0_LIN	0	プレイ時間	플레이 시간
+record0_LIN	1	1コインクリア回数	원 코인 클리어 횟수
+record0_LIN	2	プレイヤー使用率	플레이어 사용률
+record0_LIN	3	ファイター	파이터
+record0_LIN	4	クレリック	클레릭
+record0_LIN	5	エルフ	엘프
+record0_LIN	6	ドワーフ	드워프
+record0_LIN	7	平均プレイ難易度	평균 플레이 난이도
+record0_LIN	8	獲得経験値	획득 경험치
+record0_LIN	9	獲得金額	획득 금액
+record0_LIN	10	与えたダメージ	준 대미지
+record0_LIN	11	受けたダメージ	받은 대미지
+record0_LIN	12	ガード成功回数	가드 성공 횟수
+record0_LIN	13	ガードカウンター回数	가드 카운터 횟수
+record0_LIN	14	宝箱を開けた回数	보물상자를 연 횟수
+record0_LIN	15	宝箱をぶつけた回数	보물상자를 던진 횟수
+record0_LIN	16	人質救出回数	인질 구출 횟수
+record0_LIN	17	コンティニュー回数	컨티뉴 횟수
+record0_LIN	18	回復量	회복량
+record0_LIN	19	合計支払金額	총 지불 금액
+record0_LIN	20	敵討伐数	적 토벌 수
+record0_LIN	21	ボス敵討伐数	보스 토벌 수
+record0_LIN	22	炎でトドメ回数	불로 마무리한 횟수
+record0_LIN	23	飛び道具跳ね返し回数	투척 무기 튕겨 낸 횟수
+record0_LIN	24	ダンジョン踏破率	던전 답파율
+record0_LIN	28	プレイ時間	플레이 시간
+record0_LIN	29	1コインクリア回数	원 코인 클리어 횟수
+record0_LIN	30	プレイヤー使用率	플레이어 사용률
+record0_LIN	31	ファイター	파이터
+record0_LIN	32	クレリック	클레릭
+record0_LIN	33	エルフ	엘프
+record0_LIN	34	ドワーフ	드워프
+record0_LIN	35	マジックユーザー	매직 유저
+record0_LIN	36	シーフ	시프
+record0_LIN	37	平均プレイ難易度	평균 플레이 난이도
+record0_LIN	38	獲得経験値	획득 경험치
+record0_LIN	39	獲得金額	획득 금액
+record0_LIN	40	与えたダメージ	준 대미지
+record0_LIN	41	受けたダメージ	받은 대미지
+record0_LIN	42	ガード成功回数	가드 성공 횟수
+record0_LIN	43	ガードカウンター回数	가드 카운터 횟수
+record0_LIN	44	宝箱を開けた回数	보물상자를 연 횟수
+record0_LIN	45	宝箱をぶつけた回数	보물상자를 던진 횟수
+record0_LIN	46	人質救出回数	인질 구출 횟수
+record0_LIN	47	コンティニュー回数	컨티뉴 횟수
+record0_LIN	48	回復量	회복량
+record0_LIN	49	合計支払金額	총 지불 금액
+record0_LIN	50	敵討伐数	적 토벌 수
+record0_LIN	51	ボス敵討伐数	보스 토벌 수
+record0_LIN	52	ファイナルストライク使用回数	파이널 스트라이크 사용 횟수
+record0_LIN	53	伝説の剣入手回数	전설의 검 입수 횟수
+record0_LIN	54	ダンジョン踏破率	던전 답파율
+chpt_title0_LIN	1	冒険のはじまり・・・	모험의 시작…
+chpt_title0_LIN	3	モンスターが巣くう洞くつ	몬스터가 사는 동굴
+chpt_title0_LIN	5	コボルドの親玉	코볼트의 두목
+chpt_title0_LIN	7	街の人を助けろ！	마을 사람을 구하라!
+chpt_title0_LIN	9	街の酒場	마을 술집
+chpt_title0_LIN	11	川沿いの街道	강가의 가도
+chpt_title0_LIN	13	コボルドの親玉	코볼트의 두목
+chpt_title0_LIN	15	首都ダロキンに続く山道	수도 다로킨으로 가는 산길
+chpt_title0_LIN	17	ダロキンに続く山道－1	다로킨으로 가는 산길－1
+chpt_title0_LIN	19	闇夜に光る目	어둠 속에 빛나는 눈
+chpt_title0_LIN	21	クルス砦	크루스 요새
+chpt_title0_LIN	23	クルス砦の戦い－1	크루스 요새 전투－1
+chpt_title0_LIN	25	クルス砦の戦い－2	크루스 요새 전투－2
+chpt_title0_LIN	27	クルス砦上－1	크루스 요새 위－1
+chpt_title0_LIN	29	クルス砦上－2	크루스 요새 위－2
+chpt_title0_LIN	31	作り出される嘘	만들어지는 거짓
+chpt_title0_LIN	33	アセノスの街へ向かえ！	아세노스 마을로 향하라!
+chpt_title0_LIN	35	船内	배 안
+chpt_title0_LIN	37	船上	배 위
+chpt_title0_LIN	39	不死の怪物	불사의 괴물
+chpt_title0_LIN	41	黒竜が棲む沼地	흑룡이 사는 늪지
+chpt_title0_LIN	43	街外れの鍾乳洞	마을 변두리의 종유동
+chpt_title0_LIN	45	廃坑	폐광
+chpt_title0_LIN	47	さらなる奥へ	더 깊은 곳으로
+chpt_title0_LIN	49	コラングレン街の古井戸	코랑글렌 거리의 옛 우물
+chpt_title0_LIN	51	古びた水路－1	낡은 수로－1
+chpt_title0_LIN	53	古びた水路－2	낡은 수로－2
+chpt_title0_LIN	55	巨大な地下世界・・・	거대한 지하 세계…
+chpt_title0_LIN	57	東の入口	동쪽 입구
+chpt_title0_LIN	59	炎の入口	불꽃의 입구
+chpt_title0_LIN	61	北の入口	북쪽 입구
+chpt_title0_LIN	63	地下世界の行き着く先・・・	지하 세계의 끝…
+chpt_title0_LIN	65	通路	통로
+chpt_title0_LIN	67	待ち受ける刺客	기다리는 자객
+chpt_title0_LIN	69	ランネルズの砦に向かえ！	랜넬즈 요새로 향하라!
+chpt_title0_LIN	71	目前！悪しき根源の魔塔	눈앞에! 악의 근원 마탑
+chpt_title0_LIN	73	岩壁の山道	암벽 산길
+chpt_title0_LIN	75	一つ目の恐怖	외눈의 공포
+chpt_title0_LIN	77	朱き魔竜の山	붉은 마룡의 산
+chpt_title0_LIN	79	暗黒の魔塔セーブルタワー－1F	암흑의 마탑 세이블 타워－1F
+chpt_title0_LIN	81	暗黒の魔塔セーブルタワー－2F	암흑의 마탑 세이블 타워－2F
+chpt_title0_LIN	83	暗黒の魔塔セーブルタワー－3F	암흑의 마탑 세이블 타워－3F
+chpt_title0_LIN	85	暗黒の魔塔セーブルタワー－4F	암흑의 마탑 세이블 타워－4F
+chpt_title0_LIN	87	暗黒の魔塔セーブルタワー－5F	암흑의 마탑 세이블 타워－5F
+chpt_title0_LIN	89	暗黒の魔塔セーブルタワー－6F	암흑의 마탑 세이블 타워－6F
+chpt_title0_LIN	91	最終決戦	최종 결전
+chpt_title0_LIN	92	エンディング	엔딩
+chpt_title0_LIN	95	ブロークンランドの北の山々	브로큰 랜드 북쪽 산맥
+chpt_title0_LIN	97	トリンタン村へ	트린탄 마을로
+chpt_title0_LIN	99	重戦車：ジャガーノート	중전차: 저거너트
+chpt_title0_LIN	101	激流・ベスビア川を下れ！	격류・베스비아 강을 타라!
+chpt_title0_LIN	103	激流・ベスビア川－2	격류・베스비아 강－2
+chpt_title0_LIN	105	魔物たちの巣窟	마물들의 소굴
+chpt_title0_LIN	107	アエングモアの森・上空	아엥모어 숲・상공
+chpt_title0_LIN	109	奇襲する黒い影	기습하는 검은 그림자
+chpt_title0_LIN	111	腐海と呼ばれる森	부해라 불리는 숲
+chpt_title0_LIN	113+114	情報を求めて　アインスンの街	정보를 찾아서　아인슨 시가지
+chpt_title0_LIN	116+117	エルフ　木々のかけ橋	엘프　나무의 다리
+chpt_title0_LIN	119	攻防!! 大樹の大要塞	공방!! 거목의 대요새
+chpt_title0_LIN	121	大樹の大要塞・2F	거목의 대요새・2F
+chpt_title0_LIN	123	大樹の大要塞・3F	거목의 대요새・3F
+chpt_title0_LIN	125	大樹の大要塞・4F	거목의 대요새・4F
+chpt_title0_LIN	127	大樹の大要塞・5F～	거목의 대요새・5F～
+chpt_title0_LIN	129	悪夢再び・・・最上階で待つ者	다시 악몽…최상층에서 기다리는 자
+chpt_title0_LIN	131	魔獣が住む森	마수가 사는 숲
+chpt_title0_LIN	133	迷いの森	미로의 숲
+chpt_title0_LIN	135	VS! ブラックドラゴン	VS! 블랙 드래곤
+chpt_title0_LIN	137	ノーム村を助けろ!!	노움 마을을 구하라!!
+chpt_title0_LIN	139	怒り狂った獣	미쳐 날뛰는 짐승
+chpt_title0_LIN	141	精霊・ラファエルの洞窟の異変	정령・라파엘의 동굴의 이변
+chpt_title0_LIN	143	朱き魔竜 再び・・・	붉은 마룡 다시…
+chpt_title0_LIN	145	灼熱!! 溶岩界	작열!! 용암계
+chpt_title0_LIN	147	猛火の精霊獣	맹화의 정령수
+chpt_title0_LIN	149	ロストワールド	로스트 월드
+chpt_title0_LIN	151	氷結の精霊獣	빙결의 정령수
+chpt_title0_LIN	153	ドワーフの隠し地下通路	드워프의 숨겨진 지하 통로
+chpt_title0_LIN	155	シャドーエルフ　マスター	섀도 엘프 마스터
+chpt_title0_LIN	157	浮遊城 －侵入－	부유성 －침입－
+chpt_title0_LIN	159	浮遊城 決戦Ⅰ	부유성 결전Ⅰ
+chpt_title0_LIN	161	浮遊城 煉獄の回廊	부유성 연옥의 회랑
+chpt_title0_LIN	163	浮遊城 －闘技場Ⅰ－	부유성 －투기장Ⅰ－
+chpt_title0_LIN	165	浮遊城 決戦Ⅱ	부유성 결전Ⅱ
+chpt_title0_LIN	167	浮遊城 闇と虚無の狭間	부유성 어둠과 허무의 틈
+chpt_title0_LIN	169	浮遊城 －闘技場Ⅱ－	부유성 －투기장Ⅱ－
+chpt_title0_LIN	171	浮遊城 －最上階の扉へ－	부유성 －최상층 문으로－
+chpt_title0_LIN	173	最終決戦	최종 결전
+chpt_title0_LIN	174	難易度選択	난이도 선택
+chpt_title0_LIN	200	選択	선택
+chpt_title0_LIN	201	決定	결정
+chpt_title0_LIN	202	戻る	뒤로
+chpt_title0_LIN	203	選択	선택
+chpt_title0_LIN	204	決定	결정
+chpt_title0_LIN	205	戻る	뒤로
+chpt_title0_LIN	206	攻略ムービー	공략 무비
