@@ -10,7 +10,7 @@ r"""배포 묶음 (2026-11-14) — D&D 미스타라 영웅전기 (PS3 일본판 
 import hashlib, os, shutil, subprocess, sys, zipfile
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 R = lambda *p: os.path.join(ROOT, *p)
-VER = 'v0.92'
+VER = 'v0.93'
 XDELTA = r'C:\claude\utils\xdelta.exe'
 GAME = r'D:\hospi\rpcs3\games\Dungeons & Dragons - Mystara Eiyuu Senki (Japan)\PS3_GAME'
 TID = 'BLJM61055'
@@ -125,6 +125,16 @@ CHANGES_MAIN = """
    링 위 「저주의 검」, 「원더 에그」 등
 ■ 랭킹·캐릭터 기본 이름을 영문판 이름으로, 상점 대사 칸 넘침, 그 밖 대사 오류 수정
 ■ 트로피 이름·설명 한글(RPCS3 에 이 게임 트로피가 이미 등록돼 있으면 원문 그대로일 수 있음)
+
+[ v0.93 에서 바뀐 것 ]
+
+■ 타워 오브 둠 상점 하나(6스테이지)가 멈추던 문제 수정
+■ 타워 오브 둠 오프닝 줄거리 첫 쪽 뒤에 멈추던 문제 수정
+■ 타워 오브 둠 랭킹 이름(기본 이름 영문·이름 뒤 엉뚱한 글자), 데모 캐릭터 이름 깨짐,
+   1.02 랭킹 보내기 창의 이름이 가타카나로 나오던 문제 수정
+■ 타워 오브 둠 : 상자 함정·잠긴 상자 말풍선(석화·낙석·불·화살·가스·열쇠가 잠겨 있다),
+   열쇠 개수 표시, 링 CSW 띠, 대사 칸 넘침
+■ 섀도 오버 미스타라 : 마법 링 위 초록 설명 줄, 페널티 스테이지 제목, 시프 설명 칸 넘침
 
 """
 CHANGES_V102 = """

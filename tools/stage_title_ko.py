@@ -157,6 +157,35 @@ def build(e, g, log=print):
     img = np.full((16, 80), 15, np.uint8); img[sh & ~ink] = 14; img[ink] = 0
     for k, t in enumerate(tiles): ps3gfx.put(g, t, img[:, 16 * k:16 * k + 16].copy())
     prev.append((0x51F2C4, jp, img))
+    # 페널티 스테이지 «ペナルティ・ステージ / VS！ブラックドラゴン»(기록 0x5118A0: 블록 0x6ED0 7×2 + 0x6ED7 5×1, 2026-11-15 하스피 스샷)
+    #   윗줄(0x6ED0~6ED6) = 작은 글자(줄마다 색 13,13,12,12,11,10,0 + 그림자 14) · 큰 줄 = 0x6EE0~6EE6 + 0x6ED7~6EDB 이어 192px
+    PB = 0x5118AC
+    assert [struct.unpack('>H', e[PB + 4 * k:PB + 4 * k + 2])[0] for k in range(2)] == [0x6ED0, 0x6ED7], '페널티 제목 블록'
+    other = set()
+    for o_ in S.TITLES:
+        for bo, t, nx, ny in S.blocks_at(bytes(e), o_):
+            other |= {t + i + 16 * j for j in range(ny) for i in range(nx)}
+    mine = {0x6ED0 + i + 16 * j for i in range(7) for j in range(2)} | {0x6ED7 + i for i in range(5)}
+    assert not (mine & other), ('페널티 제목 칸을 다른 제목이 씀', sorted(hex(x) for x in mine & other))
+    small = [0x6ED0 + i for i in range(7)]
+    big = [0x6EE0 + i for i in range(7)] + [0x6ED7 + i for i in range(5)]
+    jp_s = np.hstack([ps3gfx.tile(g0, t) for t in small]); jp_b = np.hstack([ps3gfx.tile(g0, t) for t in big])
+    f7 = Font(r'C:\claude\utils\font\Galmuri-v2.40.3\Galmuri7.bdf')
+    pts, _ = f7.draw('페널티 스테이지'); ref, _ = f7.draw('가'); top = min(y for _, y in ref)
+    ink = np.zeros((16, 112), bool)
+    for x, y in pts: ink[y - top, x + 8] = True
+    sh = np.zeros_like(ink); sh[:, 1:] |= ink[:, :-1]; sh[1:, :] |= ink[:-1, :]; sh[1:, 1:] |= ink[:-1, :-1]
+    img_s = np.full((16, 112), 15, np.uint8); img_s[sh & ~ink] = 14
+    rowc = [13, 13, 12, 12, 11, 10, 0]
+    for y in range(7): img_s[y][ink[y]] = rowc[y]
+    for k, t in enumerate(small): ps3gfx.put(g, t, img_s[:, 16 * k:16 * k + 16].copy())
+    r = render('VS ! 블랙 드래곤', 192); jink = np.nonzero((jp_b != 15).any(0))[0]
+    x0 = int(jink.min()) if len(jink) else 8
+    ink = np.zeros((16, 192), bool); ink[:, x0:x0 + r.shape[1]] = r[:, :192 - x0]
+    sh = np.zeros_like(ink); sh[:, 1:] |= ink[:, :-1]; sh[1:, :] |= ink[:-1, :]; sh[1:, 1:] |= ink[:-1, :-1]
+    img_b = np.full((16, 192), 15, np.uint8); img_b[sh & ~ink] = 14; img_b[ink] = 0
+    for k, t in enumerate(big): ps3gfx.put(g, t, img_b[:, 16 * k:16 * k + 16].copy())
+    prev.append((PB, jp_s, img_s)); prev.append((PB, jp_b, img_b))
     log('무대 제목: 옮긴 칸 %d (영문 제목 전용 칸 %d 중) · 나머지는 제자리' % (moved[0], len(free)))
     return prev
 def main():

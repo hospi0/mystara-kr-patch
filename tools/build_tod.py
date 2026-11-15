@@ -127,12 +127,20 @@ def main():
     for u in units:
         if u['kind'] == '8' and ko.get(u['jp']): used8 |= set(ko[u['jp']])
     for s_ in ('뒤로', '완료'): used8 |= set(s_)
-    pool8 = [c for c, ch in sorted(T8.items()) if 0x580 <= c < 0x800 and '぀' <= ch <= 'ヿ']
+    # ★랭킹 이름 = 작은 가타카나 칸 0x780 + 이름 번호(0~44) → 그 45칸은 영문 자리로 비워 둠(2026-11-15 랭킹 «치실이»).
+    #   대신 원본에서 완전히 빈(그리고 8x8 글이 안 쓰는) 칸 0x5B0~0x7FF 를 더 씀.
+    RANK8 = set(range(0x780, 0x780 + 45)) | {0x5BE, 0x5FF}   # 0x5BE·0x5FF = 원본 빈칸인데 랭킹 화면이 이름 뒤 채움·바탕으로 씀(스테이트 타일맵 실측, «륻» 2026-11-15)
+    pool8 = [c for c, ch in sorted(T8.items()) if 0x580 <= c < 0x800 and '぀' <= ch <= 'ヿ' and c not in RANK8]
+    pool8 += [c for c in range(0x5B0, 0x800) if c not in T8 and c not in RANK8 and bytes(g[c * 64:c * 64 + 32]) == b'\xff' * 32]
     need8 = sorted(ch for ch in used8 if '가' <= ch <= '힣')
     log('한글 8x8 필요 %d · 칸 %d' % (len(need8), len(pool8)))
     if len(need8) > len(pool8): raise SystemExit('⛔8x8 칸 모자람')
     slot8 = {}
     for ch, c in zip(need8, pool8): slot8[ch] = c; put8(g, c, glyph8(ch))
+    # 랭킹 이름 영문: 0x780 + k ← 작은 글꼴 ASCII 칸(같은 그림체). k = 이름 번호(A~Z · & ! ? - · 0~9 · Ⅰ~Ⅴ→1~5)
+    RANKCH = [chr(65 + i) for i in range(26)] + ['&', '!', '?', '-'] + [str(i) for i in range(10)] + ['1', '2', '3', '4', '5']
+    for k, ch in enumerate(RANKCH): put8(g, 0x780 + k, get8(g0_11 := bytearray(open(R('work', 'orig', 'game_data', 'dd11x.bin'), 'rb').read()) if k == 0 else g0_11, ord(ch)))
+    log('랭킹 이름 8x8 영문 %d칸(0x780~)' % len(RANKCH))
     def code8(ch):
         if ch in slot8: return slot8[ch]
         if ch in RT8: return RT8[ch]
@@ -189,6 +197,19 @@ def main():
     for u, raw, cap, refs in fixed:
         if len(raw) > cap: log('⛔넘침(고정) %06X %d>%d %s' % (u['start'], len(raw), cap, ko.get(u['jp'])[:20])); stats['넘침'] += 1; continue
         e[u['start']:u['start'] + len(raw)] = raw; e[u['start'] + len(raw):u['start'] + cap] = b'\0' * (cap - len(raw)); stats['제자리(고정)'] += 1
+        # ★글 안쪽을 가리키는 VA(오프닝 쪽 포인터 표 0x244068~ 등) = «k번째 FFFF 제어 + d워드» → 새 글의 같은 자리로(2026-11-15 TOD 오프닝 2쪽 크래시)
+        a0 = u['start']; ends = u['start'] + cap
+        fo = [a for a in range(a0, ends, 2) if W(e0, a) == 0xFFFF]
+        fn = [a for a in range(a0, a0 + len(raw), 2) if W(e, a) == 0xFFFF]
+        for v, os_ in (va_idx.items() if not os.environ.get('NO_INNER') else []):
+            if not (a0 < v < ends) or v == a0 + 2 * len(u['head']): continue
+            k = max([i for i, f in enumerate(fo) if f <= v], default=None)
+            if k is None or len(fo) != len(fn):
+                log('  안쪽 포인터 못 맞춤 %06X → %06X (글 %06X, FFFF 원 %d 새 %d) %s' % (os_[0], v, a0, len(fo), len(fn), ko.get(u['jp'])[:16]))
+                stats['안쪽 포인터 못 맞춤'] += 1; continue
+            nv = fn[k] + (v - fo[k])
+            for o in os_: struct.pack_into('>I', e, o, nv + VA)
+            stats['안쪽 포인터'] += 1
     # 옮길 것들의 원래 자리 = 빈자리, 붙은 것끼리 합침
     sl = sorted([u['start'], u['start'] + cap] for u, raw, cap, refs in mov)
     for h in sl: e[h[0]:h[1]] = b'\0' * (h[1] - h[0])
@@ -201,7 +222,7 @@ def main():
         def ok(h):
             if h[1] - h[0] < len(raw): return False
             for (kind, o, base), delta in refs:
-                if kind == 'T' and not (0 < h[0] + delta - base < 0x10000): return False
+                if kind == 'T' and not (0 < h[0] + delta - base < 0x8000): return False   # 표 오프셋은 부호 있는 16비트(0x8000 넘으면 음수 → 상점 멈춤, 2026-11-15)
             return True
         fit = [h for h in holes if ok(h)]
         if not fit: log('⛔자리 없음 %06X %d B' % (u['start'], len(raw))); stats['넘침'] += 1; continue
@@ -223,6 +244,8 @@ def main():
                 inside = [x['start'] for x, _, c_, _ in plan if x['start'] <= o < x['start'] + c_]
                 log('  불일치 %06X %s 참조 %s@%06X 델타 %d 대상 %06X · 참조 자리가 문장 안 %s' % (u['start'], u['kind'], kind, o, delta, tgt, [hex(i) for i in inside]))
     log('검산 참조 불일치 %d' % bad)
+    big = [hex(o) for o, t, base in TABS if W(e, o) >= 0x8000]
+    if big: raise SystemExit('⛔표 오프셋 0x8000 이상(부호 있는 16비트라 음수가 됨) %s' % big)
     import itertools
     d = [i for i in range(0, len(e), 2) if e[i:i + 2] != e0_som[i:i + 2]]
     out = [hex(i) for i in d if not (ZONE[0] <= i < ZONE[1] or GRID <= i < GRID + 60 or 0x1293000 <= i < 0x1297400 or 0x24772E <= i < 0x24784E)]
@@ -252,6 +275,22 @@ def main():
         struct.pack_into('>H', e, L16 + 2 * k, W(e0, L16 + 2 * v)); struct.pack_into('>H', e, H8 + 2 * k, hud[v]); remap[v] = k
     e[GRID:GRID + 60] = bytes(remap.get(v, v) for v in NAME_GRID)
     log('이름 번호 %d개 → 가나 번호 자리(HUD 8x8 영문)' % len(remap))
+    # 랭킹 기본 이름 30명(0x149ACD0~, 16 B: 점수 4·레벨·직업·00 00·이름 8 B FF 끝) → 영문(새 번호 A=0…, 6자 이하, 2026-11-15 하스피 «ㄱ»)
+    RANK = ['YAN', 'SADRAN', 'AUGSTA', 'BRAVO', 'HILKAD', 'ARKOF', 'BRAFRD', 'GRIMHD', 'LARVA', 'CREMAT', 'ILFING', 'ALMA', 'CALVRT',
+            'YUINO', 'BRASS', 'GWEN', 'ALLEN', 'JEDAS', 'IJUST', 'MARIEL', 'GERANT', 'GARUN', 'ENID', 'RAGNEL', 'MARS', 'ALMINA',
+            'ORFEUS', 'RELIAN', 'SHERA', 'ERLING']   # 30번째 エルリング(2026-11-15 «D19톰실»)
+    for k, nm in enumerate(RANK):
+        o = 0x149ACD0 + 16 * k
+        assert e0[o + 8] != 0xFF and len(nm) <= 6, ('랭킹 기록', hex(o))
+        e[o + 8:o + 16] = bytes(ord(c) - 65 for c in nm) + b'\xff' * (8 - len(nm))
+    log('TOD 랭킹 기본 이름 %d명 영문' % len(RANK))
+    # 데모·기본 캐릭터 이름 4명(가나 번호 8 B×4) 세 벌 → 같은 표 바로 뒤 영문판 이름(CRASSUS·GRELDON·LUCIA·DIMSDALE, A=0 번호) 그대로(2026-11-15 «데모 이름 깨짐»)
+    EN4 = e0[0x243F30:0x243F50]
+    assert EN4[:8] == bytes([2, 17, 0, 18, 18, 20, 18, 0xFF]), '영문 이름표'
+    for o in (0x243F10, 0x14A3508, 0x14A3DC8):
+        assert e0[o:o + 32] == e0[0x243F10:0x243F30], ('데모 이름표', hex(o))
+        e[o:o + 32] = EN4
+    log('데모 기본 이름 4명 영문 3벌')
     # ★실제 HUD 이름 글꼴 = dd11x 8x8 칸 0x700 + 번호(HUD 바닥 무늬 4·5·6 위 획 색 1) — 0x246E08 표가 아님(«クソテタケ», 2026-11-14)
     #   번호 0~0x2C 칸에 영문: 바닥 = 0x700~0x77F 묶음 자리별 최빈 바탕색, 획 = ASCII 8x8 칸(0x41 등)의 획(색 0~3) 모양
     hud_cells = np.stack([get8(g, 0x700 + i) for i in range(0x80)])
@@ -276,7 +315,10 @@ def main():
     od = R('work', 'build'); os.makedirs(od, exist_ok=True)
     import tod_hud_gfx                                    # 아이템 이름 띠(dd11x)·캐릭터 설명 상자(dd10) — 롬 그림 글자
     d10 = bytearray(open(R('work', 'orig', 'game_data', 'dd10.bin'), 'rb').read())
-    tod_hud_gfx.apply(d10, g, log); open(os.path.join(od, 'dd10.bin'), 'wb').write(d10)
+    tod_hud_gfx.apply(d10, g, log)
+    import tod_balloons; tod_balloons.apply(d10, log)   # 상자 함정·열쇠 말풍선(dd10 0x8C02~·0x87A0~, 2026-11-15)
+    open(os.path.join(od, 'dd10.bin'), 'wb').write(d10)
+    import key_hud; key_hud.apply(g, log)                # 열쇠 HUD «カギ=» → «열쇠=»(dd11x 0x2780·0x27B1·0x27C3, 2026-11-15)
     open(os.path.join(od, 'EBOOT.BIN'), 'wb').write(e); open(os.path.join(od, 'dd11x.bin'), 'wb').write(g)
     open(os.path.join(od, 'report_tod.txt'), 'w', encoding='utf-8').write('\n'.join(rep) + '\n')
     # 글자판 미리보기

@@ -263,6 +263,7 @@ def main():
     subprocess.run([sys.executable, os.path.join(HERE, 'name_buttons.py'), os.path.join(od, 'dd21x.bin'), os.path.join(od, 'dd21x.bin')], check=True)
     log('이름 입력 버튼 4개 새김(공백·이름·지움·완료)')
     nn = name_en.write(os.path.join(od, 'dd21x.bin'), os.path.join(od, 'dd21x.bin')) if NAME_EN else 0
+    import magic_desc; magic_desc.write(os.path.join(od, 'dd21x.bin'), os.path.join(od, 'dd21x.bin'), log)   # 마법 링 위 초록 설명 줄 27개(dd21x 8x8 0x470~0x61F, 2026-11-15)
     fin = open(os.path.join(od, 'dd21x.bin'), 'rb').read()                 # 검산: 대사 한글 칸이 뒤 단계(8x8 띠·돌판·버튼)에 덮였나
     broke = ['%s(%X)' % (k, c) for c, (k, bb) in drawn.items() if fin[c * 128:(c + 1) * 128] != bb]
     log(('⛔대사 글자 칸 덮임 %d %s' % (len(broke), broke[:20])) if broke else '대사 글자 칸 덮임 0')

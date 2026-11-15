@@ -237,8 +237,25 @@ if __name__ == '__main__':
             b[off + 16 * r + 2:off + 16 * r + 8] = a1[0x14B8288 + 16 * r + 2:0x14B8288 + 16 * r + 8]
     skip |= {x for x, y in fail if 0x14B8288 <= x < 0x14B8328}
     rep.append('랭킹 기본 이름 = 1.02 두 벌(0x105E20C·0x2F93D58)에 직접 씀')
+    # 데모 기본 이름 4명(1.00 세 벌 0x243F10·0x14A3508·0x14A3DC8 → 영문) — 1.02 는 네 벌, 남은 가나 표를 전부 직접 씀(2026-11-15)
+    DJ, DE = a0[0x243F10:0x243F30], a1[0x243F10:0x243F30]
+    assert DJ != DE
+    nd = 0; x = bytes(b).find(DJ)
+    while x >= 0: b[x:x + 32] = DE; nd += 1; x = bytes(b).find(DJ, x + 1)
+    assert bytes(b).count(DE) + 0 >= 4, ('1.02 데모 이름표', nd)
+    skip |= {x for x, y in fail if 0x14A3508 <= x < 0x14A3528}
+    rep.append('데모 기본 이름 = 1.02 남은 가나 표 %d벌 직접 씀' % nd)
     fail = [f_ for f_ in fail if f_[0] not in skip]
     rep.append('1.02 UI 문구 %d줄은 1.02 자리에 직접 씀(바뀐 2줄 + 1.02 에만 있는 4줄)' % len(UI102))
+    # 1.02 랭킹 전송 창 이름 = 글자 번호 → UTF-8 표(8 B 칸, 칸 번호 = 글자 번호 + 1, 일본판 = 가타카나) — 영문 이름 번호(build_tod remap:
+    #   0~25 A~Z · 26 & · 27 ! · 28 ? · 29 - · 30~39 0~9 · 40~44 Ⅰ~Ⅴ, SOM·TOD 공용 입력표)로 바꿈(2026-11-15 «クソテタケ 200000pt»)
+    KT = b'\xe3\x82\xa2' + b'\0' * 5 + b'\xe3\x82\xa4' + b'\0' * 5 + b'\xe3\x82\xa6'
+    kb = bytes(b).find(KT); assert kb > 0 and bytes(b).find(KT, kb + 1) < 0, '1.02 이름 가나 표'
+    names = [chr(65 + i) for i in range(26)] + ['&', '!', '?', '-'] + [str(i) for i in range(10)] + ['Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ']
+    for k, ch in enumerate(names):
+        u = ch.encode('utf-8'); b[kb + 8 * k:kb + 8 * k + 8] = u + b'\0' * (8 - len(u))
+    b[kb + 8 * 0x37:kb + 8 * 0x37 + 8] = '　'.encode('utf-8') + bytes(5)   # 이름 입력 빈칸 번호 0x37(원래 ガ) → 빈칸
+    rep.append('1.02 랭킹 전송 이름 표 %X: 영문 %d칸' % (kb, len(names)))
     open(R('work', 'v102', 'build', 'report_port.txt'), 'w', encoding='utf-8').write('\n'.join(rep) + '\n')
     json.dump(port.plist, open(R('work', 'v102', 'build', 'ptrs.json'), 'w'))
     if not fail: open(R('work', 'v102', 'build', 'EBOOT.elf'), 'wb').write(b)
