@@ -10,7 +10,7 @@ r"""배포 묶음 (2026-11-14) — D&D 미스타라 영웅전기 (PS3 일본판 
 import hashlib, os, shutil, subprocess, sys, zipfile
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 R = lambda *p: os.path.join(ROOT, *p)
-VER = 'v0.93'
+VER = 'v0.94'
 XDELTA = r'C:\claude\utils\xdelta.exe'
 GAME = r'D:\hospi\rpcs3\games\Dungeons & Dragons - Mystara Eiyuu Senki (Japan)\PS3_GAME'
 TID = 'BLJM61055'
@@ -135,6 +135,10 @@ CHANGES_MAIN = """
 ■ 타워 오브 둠 : 상자 함정·잠긴 상자 말풍선(석화·낙석·불·화살·가스·열쇠가 잠겨 있다),
    열쇠 개수 표시, 링 CSW 띠, 대사 칸 넘침
 ■ 섀도 오버 미스타라 : 마법 링 위 초록 설명 줄, 페널티 스테이지 제목, 시프 설명 칸 넘침
+
+[ v0.94 에서 바뀐 것 ]
+
+■ 섀도 오버 미스타라 : 링 위 「바람의 검」이 「저주의 검」으로 나오던 문제 수정
 
 """
 CHANGES_V102 = """
@@ -388,7 +392,7 @@ EXTRA_102 = """
 """
 def main():
     sys.stdout.reconfigure(encoding='utf-8')
-    which = sys.argv[1:] or ['100', '102', 'movie']
+    which = sys.argv[1:] or ['100', '102']   # 무비는 «python tools/make_dist.py movie» 로 명시할 때만(하스피 2026-11-21 — 다시 만들지 말 것)
     base = 'MystaraEiyuuSenki_PS3_KR_' + VER
     if '100' in which:
         build_pkg2(base + '_1.00', ' (1.00 용)', [('disk', r, orig_of(r), new_of(r)) for r in MAIN],
